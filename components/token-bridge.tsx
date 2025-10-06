@@ -96,7 +96,7 @@ async function mapAccount(api: any, signer: any) {
     );
   
   return new Promise((resolve, reject) => {
-    const subscription = obsTxEvents.subscribe((event) => {
+    const subscription = obsTxEvents.subscribe((event: any) => {
       console.log('📡 Mapping transaction event:', event);
       
       if (event.type === 'finalized') {
@@ -312,22 +312,32 @@ export function TokenBridge() {
     setSelectedToken(availableTokens[0])
   }, [fromNetwork.id])
 
+  // Keep toNetwork in sync with fromNetwork (map to corresponding PolkaVM chain)
+  useEffect(() => {
+    const mappedTo = toNetworks.find(n => n.id === fromNetwork.id)
+    if (mappedTo && mappedTo.id !== toNetwork.id) {
+      setToNetwork(mappedTo)
+    }
+  }, [fromNetwork.id])
+
   const swapNetworks = () => {
-    // Since from and to networks are different types, we'll cycle through available options
+    // Cycle to next available "from" network, and map "to" network to its PolkaVM counterpart
     const currentFromIndex = fromNetworks.findIndex(n => n.id === fromNetwork.id)
-    const currentToIndex = toNetworks.findIndex(n => n.id === toNetwork.id)
-
-    // Cycle to next available network in each category
     const nextFromIndex = (currentFromIndex + 1) % fromNetworks.length
-    const nextToIndex = (currentToIndex + 1) % toNetworks.length
+    const nextFrom = fromNetworks[nextFromIndex]
+    const mappedTo = toNetworks.find(n => n.id === nextFrom.id) || toNetworks[0]
 
-    setFromNetwork(fromNetworks[nextFromIndex])
-    setToNetwork(toNetworks[nextToIndex])
+    setFromNetwork(nextFrom)
+    setToNetwork(mappedTo)
   }
 
   // Network selection handlers
   const handleFromNetworkSelect = (network: typeof fromNetworks[0]) => {
     setFromNetwork(network)
+    const mappedTo = toNetworks.find(n => n.id === network.id)
+    if (mappedTo) {
+      setToNetwork(mappedTo)
+    }
   }
 
   const handleToNetworkSelect = (network: typeof toNetworks[0]) => {
@@ -735,10 +745,12 @@ export function TokenBridge() {
                           src={fromNetwork.imageUrl} 
                           alt={fromNetwork.name}
                           className="w-8 h-8 object-contain"
-                          onError={(e) => {
+                          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                             // Fallback to first letter if image fails to load
-                            e.currentTarget.style.display = 'none'
-                            e.currentTarget.nextElementSibling!.style.display = 'flex'
+                            const img = e.currentTarget
+                            img.style.display = 'none'
+                            const fallback = img.nextElementSibling as HTMLElement | null
+                            if (fallback) fallback.style.display = 'flex'
                           }}
                         />
                         <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600 hidden">
@@ -765,10 +777,12 @@ export function TokenBridge() {
                               src={network.imageUrl} 
                               alt={network.name}
                               className="w-8 h-8 object-contain"
-                              onError={(e) => {
+                              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                                 // Fallback to first letter if image fails to load
-                                e.currentTarget.style.display = 'none'
-                                e.currentTarget.nextElementSibling!.style.display = 'flex'
+                                const img = e.currentTarget
+                                img.style.display = 'none'
+                                const fallback = img.nextElementSibling as HTMLElement | null
+                                if (fallback) fallback.style.display = 'flex'
                               }}
                             />
                             <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600 hidden">
@@ -796,10 +810,12 @@ export function TokenBridge() {
                       src={selectedToken.imageUrl} 
                       alt={selectedToken.name}
                       className="w-8 h-8 object-contain"
-                      onError={(e) => {
+                      onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                         // Fallback to first letter if image fails to load
-                        e.currentTarget.style.display = 'none'
-                        e.currentTarget.nextElementSibling!.style.display = 'flex'
+                        const img = e.currentTarget
+                        img.style.display = 'none'
+                        const fallback = img.nextElementSibling as HTMLElement | null
+                        if (fallback) fallback.style.display = 'flex'
                       }}
                     />
                     <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold hidden">
@@ -896,10 +912,12 @@ export function TokenBridge() {
                           src={toNetwork.imageUrl} 
                           alt={toNetwork.name}
                           className="w-8 h-8 object-contain"
-                          onError={(e) => {
+                          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                             // Fallback to first letter if image fails to load
-                            e.currentTarget.style.display = 'none'
-                            e.currentTarget.nextElementSibling!.style.display = 'flex'
+                            const img = e.currentTarget
+                            img.style.display = 'none'
+                            const fallback = img.nextElementSibling as HTMLElement | null
+                            if (fallback) fallback.style.display = 'flex'
                           }}
                         />
                         <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600 hidden">
@@ -926,10 +944,12 @@ export function TokenBridge() {
                               src={network.imageUrl} 
                               alt={network.name}
                               className="w-8 h-8 object-contain"
-                              onError={(e) => {
+                              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                                 // Fallback to first letter if image fails to load
-                                e.currentTarget.style.display = 'none'
-                                e.currentTarget.nextElementSibling!.style.display = 'flex'
+                                const img = e.currentTarget
+                                img.style.display = 'none'
+                                const fallback = img.nextElementSibling as HTMLElement | null
+                                if (fallback) fallback.style.display = 'flex'
                               }}
                             />
                             <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600 hidden">
@@ -957,10 +977,12 @@ export function TokenBridge() {
                       src={selectedToken.imageUrl} 
                       alt={selectedToken.name}
                       className="w-8 h-8 object-contain"
-                      onError={(e) => {
+                      onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                         // Fallback to first letter if image fails to load
-                        e.currentTarget.style.display = 'none'
-                        e.currentTarget.nextElementSibling!.style.display = 'flex'
+                        const img = e.currentTarget
+                        img.style.display = 'none'
+                        const fallback = img.nextElementSibling as HTMLElement | null
+                        if (fallback) fallback.style.display = 'flex'
                       }}
                     />
                     <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold hidden">

@@ -26,6 +26,7 @@ export interface PolkaVMChainConfig {
   rpcUrl: string;
   symbol: string;
   chainId: number;
+  decimals?: number;
   imageUrl: string;
 }
 
