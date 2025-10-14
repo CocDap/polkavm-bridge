@@ -1,4 +1,4 @@
-import { TokenBridge } from "@/components/token-bridge"
+import { TokenBridge } from "@/components/features/TokenBridge"
 
 export default function Home() {
   return (

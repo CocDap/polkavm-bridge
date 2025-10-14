@@ -156,3 +156,12 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(230, 0, 122, 0.15);
 }
+
+/* Ensure LunoKit / Radix Dialog renders above sticky header/canvas */
+[data-radix-dialog-overlay] {
+  z-index: 9999 !important;
+}
+
+[data-radix-dialog-content] {
+  z-index: 10000 !important;
+}
